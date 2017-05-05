@@ -5,9 +5,10 @@
 enum {VOID = 0, SHEEP = 1, WATER = 2, GRASS = 3};
 
 /// structure to contain parameters for the tree
-struct TreeParam{
-int depth = 15;
-int minPatchesAtLeaf = 20;
+struct TreeParam {
+    int depth = 15;
+    int minPatchesAtLeaf = 20;
+    int patchSideLength = 16;
 };
 
 /**
@@ -24,9 +25,9 @@ int minPatchesAtLeaf = 20;
  *   @return void
  */
 void generateTrainingSamples(std::vector<cv::Mat>& trainingImgs,
-                              std::vector<cv::Mat>& groundTruth,
-                              std::vector<Sample>& samplePatchesPerClass, int nClasses,
-                              int patchesPerClass = 50, int patchSize = 16);
+                             std::vector<cv::Mat>& groundTruth,
+                             std::vector<Sample>& samplePatchesPerClass, int nClasses,
+                             int patchesPerClass = 50, int patchSize = 16);
 
 
 #endif // TREE_UTILS_H

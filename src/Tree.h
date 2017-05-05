@@ -2,6 +2,7 @@
 #define TREE_H
 #include "tree_utils.h"
 #include "Node.h"
+#include "BinaryTest.h"
 /// Implements the classification tree
 class Tree {
   public:
@@ -10,7 +11,8 @@ class Tree {
     void Train(std::vector<cv::Mat> trainImgs, std::vector<cv::Mat> trainSegMaps, int numClasses);
   private:
     TreeParam param;
-    Node* root = new Node();
+    Node* root;
+    std::vector<BinaryTest> getBinaryTests();
 };
 
 #endif // TREE_H

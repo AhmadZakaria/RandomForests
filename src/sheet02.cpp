@@ -64,11 +64,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    std::vector<Sample> samplePatchesPerClass;
-    generateTrainingSamples(trainImgs, trainSegMaps, samplePatchesPerClass,
-                            nClasses);
-    cout << samplePatchesPerClass.size() << " samples created" << endl;
-
     ///***********************************************///
     ///               TREE TRAINING                   ///
     ///***********************************************///
