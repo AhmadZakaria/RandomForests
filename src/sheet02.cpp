@@ -74,13 +74,13 @@ int main(int argc, char** argv) {
     TreeParam params;
 
     /// Implement a class Tree in the files Tree.h & Tree.cpp
-    Tree tree;
+//    Tree tree;
 
     /// set the params and start training
-    tree.setParam(params);
+//    tree.setParam(params);
 
     /// train the tree
-    tree.Train(trainImgs, trainSegMaps, nClasses);
+//    tree.Train(trainImgs, trainSegMaps, nClasses);
 
     ///***********************************************///
     ///          LOADING TEST IMAGES                  ///
@@ -111,19 +111,19 @@ int main(int argc, char** argv) {
         ///***********************************************///
 
         /// evaluating each test image
-//		for (unsigned int idx = 0; idx < testImgs.size(); idx++) {
-//			cv::Mat segMapTest;
-//			if (tree.isTrained()) {
-//
-//				/// perform segmentation
-//				tree.testImage(testImgs[idx], segMapTest);
-//
-//				cv::Mat outputImage;
-//				hconcat(testImgs[idx], segMapTest, outputImage);
-//				cv::imshow("Segmentation Result with a Tree", outputImage);
-//				cv::waitKey(0);
-//			}
-//		}
+//        for (unsigned int idx = 0; idx < testImgs.size(); idx++) {
+//            cv::Mat segMapTest;
+//            if (tree.isTrained()) {
+
+//                /// perform segmentation
+//                tree.testImage(testImgs[idx], segMapTest);
+
+//                cv::Mat outputImage;
+//                hconcat(testImgs[idx], segMapTest, outputImage);
+//                cv::imshow("Segmentation Result with a Tree", outputImage);
+//                cv::waitKey(0);
+//            }
+//        }
         std::cout
                 << "Segmentation maps for test images saved at ../assign_data/tree_outputs/"
                 << std::endl;
@@ -135,22 +135,23 @@ int main(int argc, char** argv) {
     ///           TRAINING A RANDOM FOREST            ///
     ///***********************************************///
 
+    const int NUM_TREES=8;
     // Implement a class Forest in the files Forest.h & Forest.cpp
-//	Forest forest(NUM_TREES, params);
-//	forest.Train(trainImgs, trainSegMaps, nClasses);
+    Forest forest(NUM_TREES, params);
+    forest.Train(trainImgs, trainSegMaps, nClasses);
 
     ///***********************************************///
     ///            TESTING FOREST                     ///
     ///***********************************************///
 
     std::cout << "Testing images using the trained Random Forest." << std::endl;
-//	for (unsigned int idx = 0; idx < testImgs.size(); idx++) {
-//		cv::Mat segMapTest;
-//		forest.testImage(testImgs[idx], segMapTest);
-//		cv::Mat outputImage;
-//		hconcat(testImgs[idx], segMapTest, outputImage);
-//		cv::imshow("Output Segmentation Map with Random Forest", outputImage);
-//		cv::waitKey(0);
-//	}
+    for (unsigned int idx = 0; idx < testImgs.size(); idx++) {
+        cv::Mat segMapTest;
+        forest.testImage(testImgs[idx], segMapTest);
+        cv::Mat outputImage;
+        hconcat(testImgs[idx], segMapTest, outputImage);
+        cv::imshow("Output Segmentation Map with Random Forest", outputImage);
+        cv::waitKey(0);
+    }
     std::cout << "Done!" << endl;
 }

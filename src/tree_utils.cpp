@@ -1,5 +1,5 @@
 #include "tree_utils.h"
-
+#include <omp.h>
 /**
  *   @brief  Generate a set of training samples for each color class
  *   by randomly extracting patches P_M of size 16 × 16 from each training
@@ -18,7 +18,11 @@ void generateTrainingSamples(std::vector<cv::Mat>& trainingImgs,
                              std::vector<Sample>& samplePatchesPerClass, int nClasses,
                              int patchesPerClass , int patchSize ) {
 
-    cv::RNG rng;
+    int64 state = time(NULL);
+    if (omp_in_parallel()){
+        state *= (1+omp_get_thread_num());
+    }
+    cv::RNG rng(state);
     int xLowerBound = 0, yLowerBound = 0;
     int xHigherBound = (trainingImgs[0].cols - patchSize + 1);
     int yHigherBound = (trainingImgs[0].rows - patchSize + 1);
@@ -45,12 +49,12 @@ void generateTrainingSamples(std::vector<cv::Mat>& trainingImgs,
         // ground truth of the pixel
         int gt = groundTruth[idx].at<cv::Vec3b>(row, col)[0];
 
-        if (count[gt] < patchesPerClass) {
+//        if (count[gt] < patchesPerClass) {
             samplePatchesPerClass.push_back(
-                Sample(&sampleMat, cv::Rect(x, y, patchSize, patchSize),
+                Sample(new cv::Mat(sampleMat), cv::Rect(x, y, patchSize, patchSize),
                        gt));
             count[gt]++;
-        }
+//        }
 //		std::cout << samplePatchesPerClass.size() << ": " << count[0] << ", "
 //				<< count[1] << ", " << count[2] << ", " << count[3]
 //				<< std::endl;

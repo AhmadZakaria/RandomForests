@@ -6,7 +6,6 @@ struct BinaryTest {
     int c;//channel
     int x;
     int y;
-    cv::Mat patch;
     double thresh;
 };
 

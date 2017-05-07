@@ -31,15 +31,15 @@
 cmake_minimum_required(VERSION 2.6)
 project (sheet02)
 
-SET(CMAKE_CXX_FLAGS "-std=c++0x")				# New C11
+SET(CMAKE_CXX_FLAGS "-std=c++0x -fopenmp -g -shared-libgcc ")				# New C11
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)			# Binary file location
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})			# Exectuable file location for main and subprojects
 set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/lib)		# Library file location for main and subprojects
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)			# Source folder
 set(PROJECT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src)		# Header folder
 
-set(CMAKE_BUILD_TYPE debug)					# choose if you want to compile with or without debugging flags,
-#set(CMAKE_BUILD_TYPE release)					# uncomment only one of the following two commands at a time
+#set(CMAKE_BUILD_TYPE debug)					# choose if you want to compile with or without debugging flags,
+set(CMAKE_BUILD_TYPE release)					# uncomment only one of the following two commands at a time
 
 #To build the project openCV is required
 find_package( OpenCV REQUIRED )

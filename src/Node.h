@@ -3,30 +3,38 @@
 #define NODE_H
 #include <opencv2/core/core.hpp>
 #include "Sample.h"
+#include "BinaryTest.h"
 /// Node of a tree
 class Node {
 
   public:
-    Node(int row, int col, cv::Vec3b RGB, double thresh, int numClasses);
-    double train(std::vector<Sample>& samples);
+    Node(int depth, int numClasses);
+    void trainRecursively(std::vector<Sample>& samples, std::vector<BinaryTest>& tests, int maxDepth, int minLeaves);
     double entropy();
-    double infoGain(std::vector<Sample>& samples, int numClasses);
-    double f(Sample& sample) const;
+    double getInfoGain();
+    void pushDownSamples(std::vector<Sample>& samples);
     int split(Sample& sample); // returns info gain
 
-    std::vector<Sample> getPoints() const;
-    void setPoints(const std::vector<Sample>& value);
+    std::vector<Sample> getPatches();
+    void setPatches(const std::vector<Sample>& value);
+    void pushSample(Sample s);
+    std::vector<double> classifySample(Sample s);
+    bool hasOneClassOnly();
+    std::vector<double> getProbabilities();
 
   private:
-    Node* right;
-    Node* left;
+    Node* right = nullptr;
+    Node* left = nullptr;
+
+    int depth;
 
     int row;
     int col;
     int numClasses;
-    cv::Vec3b pixelRGB;
+    int channel;
     double thresh;
-    std::vector<Sample> points;
+    std::vector<Sample> patches;
+    void setParams(BinaryTest test);
 };
 
 #endif // NODE_H

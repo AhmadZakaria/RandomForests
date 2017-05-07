@@ -9,6 +9,7 @@ struct TreeParam {
     int depth = 15;
     int minPatchesAtLeaf = 20;
     int patchSideLength = 16;
+    int numClasses = 4;
 };
 
 /**

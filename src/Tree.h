@@ -6,13 +6,21 @@
 /// Implements the classification tree
 class Tree {
   public:
+    Tree();
+    Tree(TreeParam& params);
     TreeParam getParam() const;
     void setParam(const TreeParam& value);
-    void Train(std::vector<cv::Mat> trainImgs, std::vector<cv::Mat> trainSegMaps, int numClasses);
-  private:
+    void Train(std::vector<cv::Mat> &trainImgs, std::vector<cv::Mat> &trainSegMaps, int &numClasses);
+    bool isTrained() const;
+    double testImage(cv::Mat &testImg, cv::Mat &segMapOut);
+    int classifySample(Sample &s);
+private:
     TreeParam param;
-    Node* root;
+    Node* root = nullptr;
     std::vector<BinaryTest> getBinaryTests();
+    bool trained = false;
+    std::vector<cv::Scalar> colors;
+
 };
 
 #endif // TREE_H

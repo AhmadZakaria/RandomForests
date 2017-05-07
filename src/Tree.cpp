@@ -1,15 +1,50 @@
 #include "Tree.h"
 #include <iostream>
+#include <omp.h>
+Tree::Tree() {
+
+}
+
+Tree::Tree(TreeParam& params) {
+    setParam(params);
+}
+
 TreeParam Tree::getParam() const {
     return param;
 }
 
 void Tree::setParam(const TreeParam& value) {
     param = value;
+    if(root != nullptr)
+        delete root;
+    root = new Node(0, param.numClasses);
+
+    colors.resize(param.numClasses);
+    if(param.numClasses == 4) {
+        colors[0] = 0; //black
+        colors[1] = cv::Scalar(0, 0, 255); // red
+        colors[2] = cv::Scalar(255, 0, 0); // blue
+        colors[3] = cv::Scalar(0, 255, 0); // green
+
+    }   else {
+        int64 state = time(NULL);
+        if (omp_in_parallel()) {
+            state *= (1 + omp_get_thread_num());
+        }
+        cv::RNG rng(state);
+        for (int i = 0; i < colors.size(); ++i) {
+            cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+            colors[i] = color;
+        }
+    }
 }
 
 std::vector<BinaryTest> Tree::getBinaryTests() {
-    cv::RNG rng;
+    int64 state = time(NULL);
+    if (omp_in_parallel()) {
+        state *= (1 + omp_get_thread_num());
+    }
+    cv::RNG rng(state);
 
     const int channelTries = 10;
     const int PixelLocationTries = 100;
@@ -41,9 +76,36 @@ std::vector<BinaryTest> Tree::getBinaryTests() {
     return binaryTests;
 }
 
-void Tree::Train(std::vector<cv::Mat> trainImgs, std::vector<cv::Mat> trainSegMaps, int numClasses) {
-    int maxNumNodes = pow(2, param.depth + 1) - 1;//full tree size
-    int maxNumLeaves = (maxNumNodes + 1) / 2;
+bool Tree::isTrained() const {
+    return trained;
+}
+
+double Tree::testImage(cv::Mat& testImg, cv::Mat& segMapOut) {
+    segMapOut.create(testImg.rows, testImg.cols, testImg.type());
+    for (int col = 0; col < (testImg.cols - param.patchSideLength); ++col) {
+        for (int row = 0; row < (testImg.rows - param.patchSideLength); ++row) {
+            cv::Rect bbox(col, row, param.patchSideLength, param.patchSideLength);
+            Sample s(&testImg, bbox, -1);
+            int classIdx = classifySample(s);
+            int x =  col + param.patchSideLength / 2.0f;
+            int y =  row + param.patchSideLength / 2.0f;
+            segMapOut.at<cv::Vec3b>(y, x)[0] = colors[classIdx][0];
+            segMapOut.at<cv::Vec3b>(y, x)[1] = colors[classIdx][1];
+            segMapOut.at<cv::Vec3b>(y, x)[2] = colors[classIdx][2];
+
+        }
+    }
+}
+
+int Tree::classifySample(Sample& s) {
+    std::vector<double> probs = root->classifySample(s);
+    int classNum = std::distance(probs.begin(), std::max_element(probs.begin(), probs.end()));
+    return classNum;
+}
+
+void Tree::Train(std::vector<cv::Mat>& trainImgs, std::vector<cv::Mat>& trainSegMaps, int& numClasses) {
+//    int maxNumNodes = pow(2, param.depth + 1) - 1;//full tree size
+//    int maxNumLeaves = (maxNumNodes + 1, numClasses) / 2;
 
     std::vector<Sample> samplePatchesPerClass;
     generateTrainingSamples(trainImgs, trainSegMaps, samplePatchesPerClass, numClasses);
@@ -51,6 +113,10 @@ void Tree::Train(std::vector<cv::Mat> trainImgs, std::vector<cv::Mat> trainSegMa
 
 
     std::vector<BinaryTest> binaryTests = getBinaryTests();
-    std::cout << binaryTests.size() << " binary tests created" << std::endl;
+    std::cout << binaryTests.size() << "\tbinary tests created" << std::endl;
+
+    root->trainRecursively(samplePatchesPerClass, binaryTests, param.depth, param.minPatchesAtLeaf);
+
+    trained = true;
 
 }
