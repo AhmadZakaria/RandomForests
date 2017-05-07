@@ -13,7 +13,7 @@ class Node {
     double entropy();
     double getInfoGain();
     void pushDownSamples(std::vector<Sample>& samples);
-    int split(Sample& sample); // returns info gain
+    bool split(Sample& sample); // returns info gain
 
     std::vector<Sample> getPatches();
     void setPatches(const std::vector<Sample>& value);

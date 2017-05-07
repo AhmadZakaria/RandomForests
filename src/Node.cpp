@@ -19,7 +19,6 @@ void Node::trainRecursively(std::vector<Sample>& samples, std::vector<BinaryTest
         BinaryTest test  = tests[tIdx];
         setParams(test);
 
-        //pew pew pew
         pushDownSamples(samples);
 
         double gain = getInfoGain();
@@ -82,19 +81,17 @@ void Node::pushDownSamples(std::vector<Sample>& samples) {
 
     for (int sIdx = 0; sIdx < samples.size(); ++sIdx) {
         Sample s = samples[sIdx];
-        if (split(s) == 1)
+        if (split(s) )
             right->pushSample(s);
         else
             left->pushSample(s);
     }
 }
 
-int Node::split(Sample& sample) {
+bool Node::split(Sample& sample) {
     int patchValue = sample.Image->at<cv::Vec3b>(sample.bbox.y + row, sample.bbox.x + col)[channel];
 
-    if (patchValue < thresh)
-        return 1;
-    return 0;
+    return (patchValue < thresh);
 }
 
 std::vector<Sample> Node::getPatches() {

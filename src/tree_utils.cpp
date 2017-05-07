@@ -19,8 +19,8 @@ void generateTrainingSamples(std::vector<cv::Mat>& trainingImgs,
                              int patchesPerClass , int patchSize ) {
 
     int64 state = time(NULL);
-    if (omp_in_parallel()){
-        state *= (1+omp_get_thread_num());
+    if (omp_in_parallel()) {
+        state *= (1 + omp_get_thread_num());
     }
     cv::RNG rng(state);
     int xLowerBound = 0, yLowerBound = 0;
@@ -50,10 +50,10 @@ void generateTrainingSamples(std::vector<cv::Mat>& trainingImgs,
         int gt = groundTruth[idx].at<cv::Vec3b>(row, col)[0];
 
 //        if (count[gt] < patchesPerClass) {
-            samplePatchesPerClass.push_back(
-                Sample(new cv::Mat(sampleMat), cv::Rect(x, y, patchSize, patchSize),
-                       gt));
-            count[gt]++;
+        samplePatchesPerClass.push_back(
+            Sample(new cv::Mat(sampleMat), cv::Rect(x, y, patchSize, patchSize),
+                   gt));
+        count[gt]++;
 //        }
 //		std::cout << samplePatchesPerClass.size() << ": " << count[0] << ", "
 //				<< count[1] << ", " << count[2] << ", " << count[3]
