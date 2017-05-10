@@ -1,4 +1,5 @@
 #include "tree_utils.h"
+#include <iostream>
 #include <omp.h>
 /**
  *   @brief  Generate a set of training samples for each color class
@@ -9,7 +10,7 @@
  *   @param  groundTruth input vector of ground truth images
  *   @param  samplePatchesPerClass output vector of samples.
  *   @param  nClasses number of classes
- *   @param  patchesPerClass number of patches to be sample for each class
+ *   @param  patchesPerClass min number of patches to be sample for each class
  *   @param  patchSize side length of extracted patches
  *   @return void
  */
@@ -19,10 +20,14 @@ void generateTrainingSamples(std::vector<cv::Mat>& trainingImgs,
                              int patchesPerClass , int patchSize ) {
 
     int64 state = time(NULL);
+//    std::cerr << "TS State: " << state << std::endl;
     if (omp_in_parallel()) {
         state *= (1 + omp_get_thread_num());
     }
+//    std::cerr << "TS State " << omp_get_thread_num() << ": " << state << std::endl;
+
     cv::RNG rng(state);
+
     int xLowerBound = 0, yLowerBound = 0;
     int xHigherBound = (trainingImgs[0].cols - patchSize + 1);
     int yHigherBound = (trainingImgs[0].rows - patchSize + 1);

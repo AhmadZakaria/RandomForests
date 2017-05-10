@@ -1,1 +1,0 @@
-The single achieves coarse results for the test images. It can easily recognise the sheep/cow, most of the grass, etc... But the segmentation is very noisy. This is because we're using weak learners at each tree. Hence, the performance of a single tree will not be satisfactory.

@@ -13,6 +13,7 @@ class Tree {
     void Train(std::vector<cv::Mat> &trainImgs, std::vector<cv::Mat> &trainSegMaps, int &numClasses);
     bool isTrained() const;
     double testImage(cv::Mat &testImg, cv::Mat &segMapOut);
+    int classifySample(Sample &s, std::vector<double> &probs);
     int classifySample(Sample &s);
 private:
     TreeParam param;

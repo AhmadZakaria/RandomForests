@@ -31,6 +31,8 @@
 cmake_minimum_required(VERSION 2.6)
 project (sheet02)
 
+#SET(CMAKE_CXX_COMPILER "/usr/bin/cc")
+#SET(CMAKE_CXX_COMPILER "/opt/intel/compilers_and_libraries_2017.3.191/linux/bin/intel64/icpc")
 SET(CMAKE_CXX_FLAGS "-std=c++0x -fopenmp -g -shared-libgcc ")				# New C11
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)			# Binary file location
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})			# Exectuable file location for main and subprojects

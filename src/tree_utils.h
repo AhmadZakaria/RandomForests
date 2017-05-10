@@ -10,6 +10,7 @@ struct TreeParam {
     int minPatchesAtLeaf = 20;
     int patchSideLength = 16;
     int numClasses = 4;
+    int minTrainPatchesPerClass = 300;
 };
 
 /**
@@ -28,7 +29,7 @@ struct TreeParam {
 void generateTrainingSamples(std::vector<cv::Mat>& trainingImgs,
                              std::vector<cv::Mat>& groundTruth,
                              std::vector<Sample>& samplePatchesPerClass, int nClasses,
-                             int patchesPerClass = 50, int patchSize = 16);
+                             int patchesPerClass = 200, int patchSize = 16);
 
 
 #endif // TREE_UTILS_H

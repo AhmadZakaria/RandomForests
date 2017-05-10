@@ -80,8 +80,10 @@ int main(int argc, char** argv) {
     tree.setParam(params);
 
     /// train the tree
+    int64 t0 = cv::getTickCount();
     tree.Train(trainImgs, trainSegMaps, nClasses);
-
+    int64 t1 = cv::getTickCount();
+    std::cerr << "Done training tree in " << (t1 - t0) / cv::getTickFrequency() << " secs" << std::endl;
     ///***********************************************///
     ///          LOADING TEST IMAGES                  ///
     ///***********************************************///
@@ -134,24 +136,24 @@ int main(int argc, char** argv) {
     ///***********************************************///
     ///           TRAINING A RANDOM FOREST            ///
     ///***********************************************///
-
-    const int NUM_TREES=8;
+    const int NUM_TREES = 5;
     // Implement a class Forest in the files Forest.h & Forest.cpp
-//    Forest forest(NUM_TREES, params);
-//    forest.Train(trainImgs, trainSegMaps, nClasses);
+    Forest forest(NUM_TREES, params);
+    forest.Train(trainImgs, trainSegMaps, nClasses);
 
     ///***********************************************///
     ///            TESTING FOREST                     ///
     ///***********************************************///
 
     std::cout << "Testing images using the trained Random Forest." << std::endl;
-//    for (unsigned int idx = 0; idx < testImgs.size(); idx++) {
-//        cv::Mat segMapTest;
-//        forest.testImage(testImgs[idx], segMapTest);
-//        cv::Mat outputImage;
-//        hconcat(testImgs[idx], segMapTest, outputImage);
-//        cv::imshow("Output Segmentation Map with Random Forest", outputImage);
-//        cv::waitKey(0);
-//    }
+    for (unsigned int idx = 0; idx < testImgs.size(); idx++) {
+        cv::Mat segMapTest;
+        forest.testImage(testImgs[idx], segMapTest);
+//        cv::medianBlur(segMapTest,segMapTest,3); // makes it better, but let's not use it
+        cv::Mat outputImage;
+        hconcat(testImgs[idx], segMapTest, outputImage);
+        cv::imshow("Output Segmentation Map with Random Forest", outputImage);
+        cv::waitKey(0);
+    }
     std::cout << "Done!" << endl;
 }

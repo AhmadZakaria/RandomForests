@@ -1,0 +1,16 @@
+The single tree achieves imperfect results for the test images. It can easily recognise the sheep/cow, most of the grass, etc... But the segmentation is very noisy. This is because we're using weak learners at each tree, with only one threashold of one pixel in one channel. That is not a strong classifier. Hence, the performance of a single tree will not be satisfactory.
+
+By increasing then minimum number of patches for each class (to 300), the results enhanced a lot. Still not optimum though.
+
+When testing the forest, the results were much better than any single tree. With the increased number of trees, the results were comparable to the ground truth. Attached is an output from a single tree, a forest with 5 trees, and one from 50 trees.
+
+The average training time per tree on our laptops is 35 seconds, with the forest trees trained in parallel according to the number of threads available.
+
+
+=====================================================
+
+Assignment 5
+(attached output results)
+= with more depth, the trees took much longer to train and overfitted (after 15).
+= with more trees, better results were achieved, and the color gradients were smoother. 
+=  

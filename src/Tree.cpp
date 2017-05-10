@@ -17,7 +17,9 @@ void Tree::setParam(const TreeParam& value) {
     param = value;
     if(root != nullptr)
         delete root;
-    root = new Node(0, param.numClasses);
+    int rootDepth = 0;
+    #pragma omp parallel
+    root = new Node(rootDepth, param.depth, param.numClasses);
 
     colors.resize(param.numClasses);
     if(param.numClasses == 4) {
@@ -68,7 +70,7 @@ std::vector<BinaryTest> Tree::getBinaryTests() {
                 test.y = y;
                 test.thresh = rng.uniform((int)0, (int)255);
                 // at this point we have a new binary test...
-                // push it (off a cliff) into the vector
+                // push it into the vector
                 binaryTests[index++] = test;
             }
         }
@@ -99,6 +101,16 @@ double Tree::testImage(cv::Mat& testImg, cv::Mat& segMapOut) {
 
 int Tree::classifySample(Sample& s) {
     std::vector<double> probs = root->classifySample(s);
+
+    int classNum = std::distance(probs.begin(), std::max_element(probs.begin(), probs.end()));
+    return classNum;
+}
+
+int Tree::classifySample(Sample& s, std::vector<double>& probs) {
+    std::vector<double> probs_ = root->classifySample(s);
+    for (int var = 0; var < probs.size(); ++var) {
+        probs[var] += probs_[var];
+    }
     int classNum = std::distance(probs.begin(), std::max_element(probs.begin(), probs.end()));
     return classNum;
 }
@@ -108,12 +120,11 @@ void Tree::Train(std::vector<cv::Mat>& trainImgs, std::vector<cv::Mat>& trainSeg
 //    int maxNumLeaves = (maxNumNodes + 1, numClasses) / 2;
 
     std::vector<Sample> samplePatchesPerClass;
-    generateTrainingSamples(trainImgs, trainSegMaps, samplePatchesPerClass, numClasses);
-    std::cout << samplePatchesPerClass.size() << " samples created" << std::endl;
-
+    samplePatchesPerClass.reserve(4500);
+    generateTrainingSamples(trainImgs, trainSegMaps, samplePatchesPerClass, numClasses, param.minTrainPatchesPerClass, param.patchSideLength);
+    std::cout << samplePatchesPerClass.size() << " samples created for tree " << omp_get_thread_num() + 1 << std::endl;
 
     std::vector<BinaryTest> binaryTests = getBinaryTests();
-    std::cout << binaryTests.size() << "\tbinary tests created" << std::endl;
 
     root->trainRecursively(samplePatchesPerClass, binaryTests, param.depth, param.minPatchesAtLeaf);
 
